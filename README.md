@@ -1,4 +1,5 @@
 # minidocker
 NFV testbed based on Mininet and Docker
 
-Test
+Starts up mininet
+Starts up specified number of Docker containers, by the user
