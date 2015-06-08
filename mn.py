@@ -10,8 +10,11 @@ from mininet.util import isShellBuiltin
 import commands
 import subprocess
 import time
+from mininet.topo import Topo
+from time import sleep
 
 class DockerHost( Host ):
+
 	#User enters number of docker containers to run
 	numberOfContainers = int(raw_input("Enter number of containers to run: "))
 	#File to store Container IDs
@@ -22,10 +25,11 @@ class DockerHost( Host ):
 		dname = raw_input("Enter name of container to run: ")
 
 		#Running infinite loop on Ubuntu container
-		dockerRun = 'docker run -d --name '+ dname +' ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"'
-		call(dockerRun, shell=True)
+		dockerRun = subprocess.Popen(['docker', 'run', '-d', '--name', dname, 'ubuntu', '/bin/sh', '-c', 'while true; do echo hello world; sleep 1; done'])
+		
+		#dockerRun = 'docker run -d --name '+ dname +' ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"'
+		#call(dockerRun, shell=True)
 
-		#call("sleep 1", shell=True)
 		#Container ID returned in JSON format
 		did_cmd = ["docker","inspect","--format='{{ .Id }}'",dname]
 		pidp = Popen( did_cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False )
@@ -36,6 +40,7 @@ class DockerHost( Host ):
 		#containerIDFfile.close()
 		#print containerID
 	containerIDFfile.close()
+
 
 def emptyNet():
 
@@ -67,6 +72,8 @@ def emptyNet():
 	info( '*** Stopping network' )
 	net.stop()
 
+
 if __name__ == '__main__':
 	setLogLevel( 'info' )
 	emptyNet()
+
