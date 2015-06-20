@@ -18,6 +18,7 @@ from time import sleep
 import sys
 
 containerIDfile = open('cidf','w')
+# dockerIDlist = list()
 class Docker( Host ):
 
 	def __init__( self, name, image = None, startString = '/bin/sh', dargs = '-c'):
@@ -36,10 +37,8 @@ class Docker( Host ):
 		pidp = Popen( did_cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False )
 		ps_out = pidp.stdout.readlines()
 		containerID = str(ps_out[0])
-		#containerIDFfile = open('cidf','w')
+		# dockerIDlist.append(containerID)
 		containerIDfile.write(containerID)
-		#containerIDfile.close()
-		#print containerID
 
 	def delete(self):
 		self.line = None
@@ -48,11 +47,14 @@ class Docker( Host ):
 		f.seek(0)
 		for i in range(0,nu):
 			self.line=f.next().strip()
-			ipadd = '10.0.0.'+str(i+24)+'/8'
 			call(["docker stop "+self.line], shell=True)
 			call(["docker rm "+self.line], shell=True)
 		f.close()
-		# call(["docker stop "+self.name], shell=True)
+		call(["docker stop "+self.name], shell=True)
+
+		# for i in range(0, len(dockerIDlist)):
+		# 	call(["docker stop "+dockerIDlist[i]], shell=True)
+		# 	call(["docker rm "+dockerIDlist[i]], shell=True)
 		
 
 
@@ -86,11 +88,17 @@ def dockNet():
     f.seek(0)
     for i in range(0,nu):
     	line=f.next().strip()
-    	print line+' ID'
+    	# print line+' ID'
     	ipadd = '10.0.0.'+str(i+24)+'/8'
     	# print ipadd
     	subprocess.Popen(['ovs-docker', 'add-port', 's1', 'eth1', line, ipadd])
     f.close()
+
+    # for i in range(0, len(dockerIDlist)):
+    # 	print dockerIDlist[i]
+    #    	ipadd = '10.0.0.'+str(i+24)+'/8'
+    # 	# print ipadd
+    # 	subprocess.Popen(['ovs-docker', 'add-port', 's1', 'eth1', dockerIDlist[i], ipadd])
     time.sleep(5)
 
     info( '*** Running CLI\n' )
@@ -111,4 +119,5 @@ if __name__ == '__main__':
 		d = Docker(x,y)
 
 	containerIDfile.close()
+	time.sleep(5)
 	dockNet()
