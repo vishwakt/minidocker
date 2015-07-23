@@ -20,6 +20,10 @@ An API for running Docker containers as Mininet Hosts
                     |
                   host3
 
+Docker1 is an Ubuntu image capable of running a packet 
+analyser using tcpdump, firewall using iptables and an 
+apache webserver
+
 """
 
 from mininet.net import Mininet
@@ -53,9 +57,9 @@ def dockerNet():
 
     info( '*** Adding hosts\n' )
     h1 = net.addHost( 'h1', ip = '10.0.0.1')
-    h2 = net.addHost( 'h2', ip = '10.0.0.2')
+    h2 = net.addHost( 'h2', ip = '11.0.0.2')
     h3 = net.addHost( 'h3', ip = '11.0.0.3')
-    h5 = net.addDocker( 'd1', 'ubuntu', 'p')
+    d1 = net.addDocker( 'd1', 'wsipt/cp', 'p')
 
     info( '*** Adding switch\n' )
     s1 = net.addSwitch( 's1' )
@@ -72,8 +76,8 @@ def dockerNet():
 
     info( '*** Starting network\n')
     net.start()
-    net.addDockerLink( 's3', 'd1', '10.0.0.25' )
-    net.addDockerLink( 's4', 'd1', '11.0.0.25' )
+    net.addDockerLink( 's1', 'd1', '10.0.0.25' )
+    net.addDockerLink( 's2', 'd1', '11.0.0.25' )
 
     info( '*** Running CLI\n' )
     CLI( net )
