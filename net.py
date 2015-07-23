@@ -248,22 +248,24 @@ class Mininet( object ):
         self.nameToNode[ name ] = h
         return h
 
-    def addDocker(self, name, image, privilege, startString = '/bin/sh', dargs = '-c'):
+    def addDocker(self, name, image, privilege, shell = '/bin/sh', cmdFlag = '-c', cmd = 'while true; do echo hello world; sleep 1; done'):
         
         self.name = name
         self.image = image
-        self.startString = startString
-        self.dargs = dargs  
+        self.shell = shell 
         self.privilege = privilege
+        self.cmdFlag = cmdFlag
+        self.cmd = cmd
 
         if self.privilege == 'p':
             privilege = '--privileged=true'
-        privilege = '--privileged=false'
+        else:
+            privilege = '--privileged=false'
 
         call(["docker stop "+self.name], shell=True)
         call(["docker rm "+self.name], shell=True)
-
-        dockerRun = subprocess.Popen(['docker', 'run', '-d', privilege, '--name', self.name, self.image, self.startString, self.dargs, 'while true; do echo hello world; sleep 1; done'])
+        time.sleep(2)
+        dockerRun = subprocess.Popen(['docker', 'run', '-d', privilege, '--name', self.name, self.image, self.shell, self.cmdFlag, self.cmd])
         time.sleep(5)
         did_cmd = ["docker","inspect","--format='{{ .Id }}'",self.name]
         pidp = Popen( did_cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False )
